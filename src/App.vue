@@ -4,7 +4,7 @@
     <div class="value">{{ value }}</div>
     <svg class="graph">
       <!-- <line x1="100" y1="500" x2="100" y2="0" stroke="#666"></line> -->
-      <line v-for="i in 10" :x1="movement(i)" :y1="graphSize" :x2="movement(i)" :y2="0" stroke="#666"></line>
+      <line v-for="i in 25" :x1="movement(i)" :y1="graphSize" :x2="movement(i)" :y2="0" stroke="#666"></line>
       <polyline fill="none" stroke="orangered" :points="points" stroke-width="3"></polyline>
     </svg>
   </div>
@@ -50,10 +50,10 @@ export default {
       pts.map((v, i) => {
         p += `${i},${500 - v / 200 * 500} `
       })
-      if (this.timer.timeElapsed >= 5000) {
-        this.timer.stop()
-        console.log(this.pts)
-      }
+      // if (this.timer.timeElapsed >= 5000) {
+        // this.timer.stop()
+        // console.log(this.pts)
+      // }
       return p
     }
   },
@@ -62,9 +62,15 @@ export default {
   },
   methods: {
     movement(i) {
-      let t = this.timer.timeElapsed / 10 % 50
+      const slowDown = 10
+      const spacing = 20
+      const divisions = 25
 
-      return this.graphSize / 10 * i - t
+      // 500 (width) / divisions = spacing
+
+      let t = this.timer.timeElapsed / slowDown % spacing
+
+      return this.graphSize / divisions * i - t
     }
   }
 }
