@@ -20,7 +20,7 @@ export default {
     return {
       value: 50,
       graphSize: 500,
-      pts: '',
+      pts: [],
       timer: {
         timeElapsed: 0,
         startTime: null,
@@ -39,12 +39,22 @@ export default {
   },
   computed: {
     points() {
+      let pts = []
+
       if (this.timer.timeElapsed) {
-        this.pts += `0,${(this.value / 200) * 500} `
+        this.pts.push(this.value)
+        pts = this.pts.slice(-500)
       }
 
-      this.pts = this.pts.split(' ').slice(-400).join(' ')
-      return this.pts
+      let p = ''
+      pts.map((v, i) => {
+        p += `${i},${500 - v / 200 * 500} `
+      })
+      if (this.timer.timeElapsed >= 5000) {
+        this.timer.stop()
+        console.log(this.pts)
+      }
+      return p
     }
   },
   created() {
@@ -52,7 +62,7 @@ export default {
   },
   methods: {
     movement(i) {
-      let t = (this.timer.timeElapsed / 10) % 50
+      let t = this.timer.timeElapsed / 10 % 50
 
       return this.graphSize / 10 * i - t
     }
