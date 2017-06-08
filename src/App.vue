@@ -1,98 +1,79 @@
 <template>
-  <div id="app">
-    <input type="range" min="0" max="200" v-model="value">
-    <div class="value">{{ value }}</div>
-    <svg class="graph">
-      <!-- <line x1="100" y1="500" x2="100" y2="0" stroke="#666"></line> -->
-      <line v-for="i in 25" :x1="movement(i)" :y1="graphSize" :x2="movement(i)" :y2="0" stroke="#666"></line>
-      <polyline fill="none" stroke="orangered" :points="points" stroke-width="3"></polyline>
-    </svg>
-  </div>
+    <div id="app">
+        <input type="range" min="0" max="200" v-model.number="value">
+        <div class="value">{{ value }}</div>
+        <button @click="toggleTimer">Timer</button>
+        <p>{{ timer.timeElapsed | formatTime }}</p>
+        <graph :points="points"></graph>
+    </div>
 </template>
 
 <script>
-import ValueSlider from './components/ValueSlider.vue'
+import Graph from './components/Graph.vue'
 import moment from 'moment'
 
 export default {
-  name: 'app',
-  data () {
-    return {
-      value: 50,
-      graphSize: 500,
-      pts: [],
-      timer: {
-        timeElapsed: 0,
-        startTime: null,
-        clock: null,
-        start() {
-          this.startTime = moment()
-          this.clock = setInterval(() => {
-            this.timeElapsed = moment().diff(this.startTime, 'milliseconds')
-          }, 1)
-        },
-        stop() {
-          clearInterval(this.clock)
+    name: 'app',
+    components: {
+        Graph
+    },
+    data () {
+        return {
+            value: 50,
+            points: [],
+            timer: {
+                timeElapsed: 0,
+                startTime: null,
+                clock: null,
+                start() {
+                    this.startTime = moment()
+                    this.clock = setInterval(() => {
+                        this.timeElapsed = moment().diff(this.startTime, 'milliseconds')
+                    }, 1)
+                },
+                stop() {
+                    clearInterval(this.clock)
+                    this.clock = null
+                }
+            }
         }
-      }
+    },
+    watch: {
+        timer: {
+            deep: true,
+            handler(t) {
+                this.points.push({
+                    x: t.timeElapsed,
+                    y: this.value
+                })
+            }
+        }
+    },
+    methods: {
+        toggleTimer() {
+            if (this.timer.clock) {
+                this.timer.stop()
+            } else {
+                this.timer.start()
+            }
+        }
+    },
+    filters: {
+        formatTime: function(ms) {
+            const zeroTime = moment('2016-06-12 00:00:00')
+            if (ms > 3600000) {
+                return zeroTime.add(ms, 'milliseconds').format('HH:mm:ss:SSS')
+            } else if (ms > 60000) {
+                return zeroTime.add(ms, 'milliseconds').format('mm:ss:SSS')
+            } else if (ms > 1000) {
+                return zeroTime.add(ms, 'milliseconds').format('ss:SSS')
+            } else {
+                return zeroTime.add(ms, 'milliseconds').format('SSS')
+            }
+        }
     }
-  },
-  computed: {
-    points() {
-      let pts = []
-
-      if (this.timer.timeElapsed) {
-        this.pts.push(this.value)
-        pts = this.pts.slice(-500)
-      }
-
-      let p = ''
-      pts.map((v, i) => {
-        p += `${i},${500 - v / 200 * 500} `
-      })
-      // if (this.timer.timeElapsed >= 5000) {
-        // this.timer.stop()
-        // console.log(this.pts)
-      // }
-      return p
-    }
-  },
-  created() {
-    this.timer.start()
-  },
-  methods: {
-    movement(i) {
-      const slowDown = 10
-      const spacing = 20
-      const divisions = 25
-
-      // 500 (width) / divisions = spacing
-
-      let t = this.timer.timeElapsed / slowDown % spacing
-
-      return this.graphSize / divisions * i - t
-    }
-  }
 }
 </script>
 
 <style lang="scss">
-body {
-  background: black;
-  color: white;
-}
-
-#app {
-  input[type="range"] {
-    transform: rotate(-90deg);
-    margin-top: 100px;
-    float: left;
-  }
-
-  .graph {
-    width: 500px;
-    height: 500px;
-    border: 1px solid whitesmoke;
-  }
-}
 </style>
