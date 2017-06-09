@@ -53,9 +53,11 @@ export default {
     },
     methods: {
         verticalGrid(i) {
-            // TODO
-            // increase this periodically
-            const sec = 1000
+            const mins = Math.floor((this.time / 60000))
+
+            // TODO sec needs to increase preiodically
+            // 1000, 2000, 3000
+            let sec = mins > 1 ? 1000 * (mins + 1) : 1000
 
             let interval = this.width / (this.time / sec)
 
