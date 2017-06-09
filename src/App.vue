@@ -4,7 +4,7 @@
         <div class="value">{{ value }}</div>
         <button @click="toggleTimer">Timer</button>
         <p>{{ timer.timeElapsed | formatTime }}</p>
-        <graph :points="points"></graph>
+        <graph :points="points" :time="timer.timeElapsed"></graph>
     </div>
 </template>
 

@@ -1,6 +1,15 @@
 <template lang="html">
     <div id="graph">
         <svg class="graph" :width="width" :height="height">
+            <!-- <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+                </linearGradient>
+            </defs> -->
+            <!-- NOTE: 60 normally means 60 seconds, after 1 minute 1 line represents 2 seconds so it will show 30 lines and then more as time progress -->
+            <line v-for="i in 60" :x1="verticalGrid(i)" :y1="height" :x2="verticalGrid(i)" stroke="darkgray" fill="none"></line>
+            <!-- <polyline :points="plot" fill="url(#gradient)" stroke="black"></polyline> -->
             <polyline :points="plot" fill="none" stroke="black"></polyline>
         </svg>
     </div>
@@ -9,7 +18,7 @@
 <script>
 export default {
     name: 'graph',
-    props: ['points'],
+    props: ['points', 'time'],
     data() {
         return {
             width: 700,
@@ -19,36 +28,43 @@ export default {
     },
     computed: {
         plot() {
-            const length = this.points.length
-            const strPlot = this.points.reduce((strPlot, val, i) => {
-                this.maxY = val.y > this.maxY ? val.y : this.maxY
-
-
-                const x = i ? this.width / (length - 1) * i : 0
-                const y = this.height - this.height * (val.y / this.maxY)
-
-                strPlot += ` ${x},${y}`
-
-                return strPlot
-            }, `0,${this.height}`)
-
+            // const length = this.points.length
+            // let strPlot = this.points.reduce((strPlot, val, i) => {
+            //     this.maxY = val.y > this.maxY ? val.y : this.maxY
             //
-            // this.points.map((v, i) => {
-            //     const xInterval = Math.floor(this.width / (length - 1))
             //
-            //     this.max.x = v.x
-            //     this.maxY = v.y > this.maxY ? v.y : this.maxY
+            //     // NOTE: this is not right
+            //     // const x = i ? this.width / (length - 1) * i : 0
+            //      // TODO: right now it is being spaced as if the x value is
+            //      // is always equally spaced out, but that is not necessarily the case
+            //      // assuming: 0,0 350,80 700,90
+            //      // reality: 0,0, 620,80 700,90
+            //     const x = (this.width / this.time) * 1000 * i
+            //     const y = this.height - this.height * (val.y / this.maxY)
             //
-            //     let x = xInterval * i
-            //     strPlot += `${x},${v.y} `
+            //     strPlot += ` ${x},${y}`
             //
-            //     if (x > this.width) {
-            //         console.log(x, length)
-            //     }
-            // })
+            //     return strPlot
+            // }, `0,${this.height}`)
             //
-            return strPlot
-            // console.log(this.max.x, this.maxY)
+            // strPlot += ` ${this.width},${this.height}`
+            // return strPlot
+        }
+    },
+    methods: {
+        verticalGrid(i) {
+            // TODO
+            // increase this periodically
+            const sec = 1000
+
+            let interval = this.width / (this.time / sec)
+
+            if (interval === Infinity) {
+                // hide
+                return -1
+            }
+
+            return interval * i
         }
     }
 }
