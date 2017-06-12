@@ -4,7 +4,7 @@
         <div class="value">{{ value }}</div>
         <button @click="toggleTimer">Timer</button>
         <p>{{ timer.timeElapsed | formatTime }}</p>
-        <graph :points="points" :time="timer.timeElapsed"></graph>
+        <graph :value="value" :time="timer.timeElapsed"></graph>
     </div>
 </template>
 
@@ -38,22 +38,23 @@ export default {
             }
         }
     },
-    watch: {
-        timer: {
-            deep: true,
-            handler(t) {
-                this.points.push({
-                    x: t.timeElapsed,
-                    y: this.value
-                })
-            }
-        }
-    },
+    // watch: {
+    //     timer: {
+    //         deep: true,
+    //         handler(t) {
+    //             this.points.push({
+    //                 x: t.timeElapsed,
+    //                 y: this.value
+    //             })
+    //         }
+    //     }
+    // },
     methods: {
         toggleTimer() {
             if (this.timer.clock) {
                 this.timer.stop()
             } else {
+                this.timer.timeElapsed = 0
                 this.timer.start()
             }
         }
