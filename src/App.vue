@@ -19,7 +19,7 @@ export default {
     },
     data () {
         return {
-            value: 50,
+            value: 0,
             points: [],
             timer: {
                 timeElapsed: 0,
