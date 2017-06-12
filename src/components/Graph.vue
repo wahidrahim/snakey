@@ -9,7 +9,7 @@
       </defs>
       <!-- x label -->
       <text class="axis-label"
-      :x="width / 2"
+      :x="width / 2 - 20"
       :y="height + 50">Seconds</text>
       <!-- x-axis -->
       <line class="x-axis"
@@ -47,11 +47,10 @@
       <text class="axis-label"
       :transform="`rotate(-90 0 ${height / 2})`"
       :x="0"
-      :y="height / 2 - 50">Value</text>
+      :y="height / 2 - 60">Value</text>
       <!-- y interval lines -->
       <line class="y-interval-lines"
       v-for="i in maxYintervals"
-      v-show="yInterval(i) <= height"
       :x1="0"
       :y1="yInterval(i)"
       :x2="width"
@@ -61,11 +60,24 @@
       <text class="value-label"
       text-anchor="end"
       v-for="i in maxYintervals"
-      v-show="yInterval(i) <= height"
+      v-show="maxValue > 0"
       :x="-10"
       :y="yInterval(i)">{{ yLabel(i) }}</text>
       <!-- plotted line -->
+      <!-- current value line -->
       <polyline :points="plot" fill="url(#gradient)" stroke="black"></polyline>
+      <line class="current-value-line"
+      fill="none"
+      stroke="orangered"
+      :x1="0"
+      :y1="valueLineHeight()"
+      :x2="width"
+      :y2="valueLineHeight()"></line>
+      <!-- current value -->
+      <text class="current-value"
+      :x="2"
+      :y="valueLineHeight() - 3"
+      fill="orangered">{{ value }}</text>
     </svg>
   </div>
 </template>
@@ -133,6 +145,9 @@ export default {
     }
   },
   methods: {
+    valueLineHeight() {
+      return this.maxValue ? this.height - this.height * this.value / this.maxValue : this.height
+    },
     xInterval(i) {
       const minute = 60000
       const spacingInterval = Math.floor((this.time / minute * 2)) // space out every 30 seconds
@@ -176,13 +191,18 @@ export default {
     padding: 100px;
 
     .time-label,
-    .value-label {
+    .value-label,
+    .current-value {
       font-size: 10px;
       font-family: monospace;
     }
 
     .axis-label {
       font-family: sans-serif;
+    }
+
+    .current-value {
+      font-size: 14px;
     }
   }
 }
