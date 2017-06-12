@@ -18,6 +18,17 @@
       <text class="time-label" v-for="i in maxXintervals"
       :x="xInterval(i)"
       :y="height - 100">{{ secPerInterval * i }}</text>
+      <!-- y interval lines -->
+      <line class="y-interval-lines" v-for="i in maxXintervals"
+      :x1="0"
+      :y1="yInterval(i)"
+      :x2="width"
+      :y2="yInterval(i)" stroke="darkgray"
+      fill="none"></line>
+      <!-- y interval labels -->
+      <text class="time-label" v-for="i in 10"
+      :x="100"
+      :y="yInterval(i)">{{ Math.round(maxValue / i) }}</text>
       <!-- plotted line -->
       <polyline :points="plot" fill="url(#gradient)" stroke="black"></polyline>
     </svg>
@@ -101,7 +112,11 @@ export default {
 
       return interval * i
     },
-    horizontalGrid(i) {
+    yInterval(i) {
+      if (this.maxValue === 0) {
+        return this.height
+      }
+
       return this.height / (this.maxValue / 10) * i
     },
     intervalSecond(i) {
